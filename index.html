@@ -3,103 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>18 Talik Random Raqamlar</title>
+    <title>18 Talik O'yin</title>
     <style>
-        body {
-            background-color: #1a1a2e;
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
+        body { background-color: #1a1a2e; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; width: 95%; max-width: 1000px; }
+        .card { 
+            aspect-ratio: 1 / 1; background-color: #16213e; border: 3px solid #0f3460; border-radius: 10px; 
+            display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; padding: 5px; box-sizing: border-box; 
         }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            max-width: 350px;
-            width: 100%;
+        .card textarea { 
+            width: 100%; height: 100%; background: transparent; border: none; color: white; 
+            text-align: center; font-size: 14px; resize: none; pointer-events: none; /* Raqam chiqishiga xalaqit bermasligi uchun */
         }
-        .card {
-            aspect-ratio: 1 / 1;
-            background-color: #16213e;
-            border: 2px solid #0f3460;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: 0.3s;
-            position: relative;
-        }
-        .card input {
-            width: 80%;
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid #555;
-            color: white;
-            text-align: center;
-            font-size: 14px;
-        }
-        .card.active {
-            background-color: #e94560;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        .controls {
-            margin-bottom: 20px;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #e94560;
-            border: none;
-            color: white;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        button:disabled { background-color: #555; }
+        .card.editable textarea { pointer-events: auto; } /* Faqat o'yin boshlanishidan oldin yozish mumkin */
+        
+        .card.active { background-color: #e94560; font-size: 30px; font-weight: bold; }
+        .controls { margin-bottom: 20px; }
+        button { padding: 10px 20px; background-color: #e94560; border: none; color: white; border-radius: 5px; cursor: pointer; font-weight: bold; margin: 5px; }
+        
+        @media (max-width: 700px) { .grid { grid-template-columns: repeat(3, 1fr); } }
     </style>
 </head>
 <body>
-
-    <h2>18 Talik Katak</h2>
-    
+    <h2>18 Talik Kataklar</h2>
     <div class="controls">
         <button id="start-btn" onclick="startGame()">O'yinni boshlash</button>
         <button onclick="location.reload()">Yangilash</button>
     </div>
-
     <div id="game-grid" class="grid"></div>
 
     <script>
         const grid = document.getElementById('game-grid');
         const startBtn = document.getElementById('start-btn');
         let isGameStarted = false;
-        let numbers = Array.from({length: 18}, (_, i) => i + 1);
+        let randomNumbers = Array.from({length: 18}, (_, i) => i + 1).sort(() => Math.random() - 0.5);
 
-        // Raqamlarni aralashtirish (Random)
-        function shuffle(array) {
-            return array.sort(() => Math.random() - 0.5);
-        }
-
-        // Kataklarni yaratish
         function createBoard() {
-            const randomNumbers = shuffle([...numbers]);
             for (let i = 0; i < 18; i++) {
                 const card = document.createElement('div');
-                card.classList.add('card');
+                card.classList.add('card', 'editable');
                 
-                // Input yaratish (ustiga yozish uchun)
-                const input = document.createElement('input');
-                input.placeholder = (i + 1) + "-katak";
-                card.appendChild(input);
+                const txt = document.createElement('textarea');
+                txt.placeholder = (i + 1) + "-katak";
+                card.appendChild(txt);
 
                 card.onclick = function() {
-                    if (isGameStarted) {
-                        // Agar o'yin boshlangan bo'lsa, raqamni chiqarish
-                        this.innerHTML = randomNumbers[i];
+                    if (isGameStarted && !this.classList.contains('active')) {
+                        this.innerHTML = randomNumbers[i]; // Raqamni chiqarish
                         this.classList.add('active');
                     }
                 };
@@ -110,15 +60,10 @@
         function startGame() {
             isGameStarted = true;
             startBtn.disabled = true;
-            const inputs = document.querySelectorAll('input');
-            inputs.forEach(inp => {
-                if(inp.value === "") inp.value = "Katak"; // Bo'sh bo'lsa nom berish
-                inp.disabled = true; // Yozishni to'xtatish
-                inp.style.border = "none";
-            });
-            alert("O'yin boshlandi! Endi kataklarni bosing.");
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('editable'));
+            document.querySelectorAll('textarea').forEach(t => t.disabled = true);
+            alert("O'yin boshlandi! Kataklarni bosing.");
         }
-
         createBoard();
     </script>
 </body>
