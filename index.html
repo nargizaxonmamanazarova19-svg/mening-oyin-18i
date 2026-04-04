@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>18 Katak O‘yin</title>
+<style>
+  body {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    background:#111;
+    font-family:sans-serif;
+  }
+  .container {
+    display:grid;
+    grid-template-columns: repeat(6, 80px);
+    gap:10px;
+  }
+  .cell {
+    width:80px;
+    height:80px;
+    background:#333;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:14px;
+    border-radius:10px;
+    cursor:pointer;
+    text-align:center;
+    padding:5px;
+  }
+  .opened {
+    background:#0a0;
+  }
+  input {
+    width:70px;
+    font-size:12px;
+    text-align:center;
+    background:transparent;
+    border:none;
+    color:white;
+    outline:none;
+  }
+</style>
+</head>
+<body>
+
+<div class="container" id="grid"></div>
+
+<script>
+let grid = document.getElementById("grid");
+
+// 18 ta random son (1–18)
+let randomNumbers = Array.from({length:18}, (_,i)=>i+1).sort(()=>Math.random()-0.5);
+
+for(let i=0;i<18;i++){
+  let cell = document.createElement("div");
+  cell.className = "cell";
+
+  let input = document.createElement("input");
+  input.placeholder = "Yoz";
+
+  let hiddenNumber = randomNumbers[i];
+
+  let opened = false;
+
+  cell.onclick = () => {
+    if(!opened){
+      opened = true;
+      cell.innerHTML = hiddenNumber;
+      cell.classList.add("opened");
+    }
+  };
+
+  cell.appendChild(input);
+  grid.appendChild(cell);
+}
+</script>
+
+</body>
+</html>
