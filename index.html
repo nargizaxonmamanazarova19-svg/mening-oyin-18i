@@ -1,83 +1,125 @@
 <!DOCTYPE html>
-<html>
+<html lang="uz">
 <head>
-<meta charset="UTF-8">
-<title>18 Katak O‘yin</title>
-<style>
-  body {
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    background:#111;
-    font-family:sans-serif;
-  }
-  .container {
-    display:grid;
-    grid-template-columns: repeat(6, 80px);
-    gap:10px;
-  }
-  .cell {
-    width:80px;
-    height:80px;
-    background:#333;
-    color:white;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:14px;
-    border-radius:10px;
-    cursor:pointer;
-    text-align:center;
-    padding:5px;
-  }
-  .opened {
-    background:#0a0;
-  }
-  input {
-    width:70px;
-    font-size:12px;
-    text-align:center;
-    background:transparent;
-    border:none;
-    color:white;
-    outline:none;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>18 Talik Random Raqamlar</title>
+    <style>
+        body {
+            background-color: #1a1a2e;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 350px;
+            width: 100%;
+        }
+        .card {
+            aspect-ratio: 1 / 1;
+            background-color: #16213e;
+            border: 2px solid #0f3460;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+        }
+        .card input {
+            width: 80%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #555;
+            color: white;
+            text-align: center;
+            font-size: 14px;
+        }
+        .card.active {
+            background-color: #e94560;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #e94560;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:disabled { background-color: #555; }
+    </style>
 </head>
 <body>
 
-<div class="container" id="grid"></div>
+    <h2>18 Talik Katak</h2>
+    
+    <div class="controls">
+        <button id="start-btn" onclick="startGame()">O'yinni boshlash</button>
+        <button onclick="location.reload()">Yangilash</button>
+    </div>
 
-<script>
-let grid = document.getElementById("grid");
+    <div id="game-grid" class="grid"></div>
 
-// 18 ta random son (1–18)
-let randomNumbers = Array.from({length:18}, (_,i)=>i+1).sort(()=>Math.random()-0.5);
+    <script>
+        const grid = document.getElementById('game-grid');
+        const startBtn = document.getElementById('start-btn');
+        let isGameStarted = false;
+        let numbers = Array.from({length: 18}, (_, i) => i + 1);
 
-for(let i=0;i<18;i++){
-  let cell = document.createElement("div");
-  cell.className = "cell";
+        // Raqamlarni aralashtirish (Random)
+        function shuffle(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
 
-  let input = document.createElement("input");
-  input.placeholder = "Yoz";
+        // Kataklarni yaratish
+        function createBoard() {
+            const randomNumbers = shuffle([...numbers]);
+            for (let i = 0; i < 18; i++) {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                
+                // Input yaratish (ustiga yozish uchun)
+                const input = document.createElement('input');
+                input.placeholder = (i + 1) + "-katak";
+                card.appendChild(input);
 
-  let hiddenNumber = randomNumbers[i];
+                card.onclick = function() {
+                    if (isGameStarted) {
+                        // Agar o'yin boshlangan bo'lsa, raqamni chiqarish
+                        this.innerHTML = randomNumbers[i];
+                        this.classList.add('active');
+                    }
+                };
+                grid.appendChild(card);
+            }
+        }
 
-  let opened = false;
+        function startGame() {
+            isGameStarted = true;
+            startBtn.disabled = true;
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(inp => {
+                if(inp.value === "") inp.value = "Katak"; // Bo'sh bo'lsa nom berish
+                inp.disabled = true; // Yozishni to'xtatish
+                inp.style.border = "none";
+            });
+            alert("O'yin boshlandi! Endi kataklarni bosing.");
+        }
 
-  cell.onclick = () => {
-    if(!opened){
-      opened = true;
-      cell.innerHTML = hiddenNumber;
-      cell.classList.add("opened");
-    }
-  };
-
-  cell.appendChild(input);
-  grid.appendChild(cell);
-}
-</script>
-
+        createBoard();
+    </script>
 </body>
 </html>
