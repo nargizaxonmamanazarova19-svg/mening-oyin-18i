@@ -3,29 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>18 Talik O'yin</title>
+    <title>18 Talik Katta O'yin</title>
     <style>
-        body { background-color: #1a1a2e; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
-        .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; width: 95%; max-width: 1000px; }
+        body { 
+            background-color: #1a1a2e; 
+            color: white; 
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            margin: 0; 
+        }
+
+        /* 18 TA KATAKNI 6 TA USTUNGA BO'LDIK (6x3=18) */
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(6, 1fr); 
+            gap: 20px; 
+            width: 95%; 
+            max-width: 1300px; 
+            padding: 20px;
+        }
+
         .card { 
-            aspect-ratio: 1 / 1; background-color: #16213e; border: 3px solid #0f3460; border-radius: 10px; 
-            display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; padding: 5px; box-sizing: border-box; 
+            aspect-ratio: 1 / 1; 
+            background-color: #16213e; 
+            border: 4px solid #0f3460; 
+            border-radius: 15px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            position: relative; 
+            padding: 10px; 
+            box-sizing: border-box; 
+            transition: transform 0.2s, background-color 0.3s;
         }
+
+        .card:hover { transform: scale(1.05); }
+
+        /* ISMLAR YOZILADIGAN JOY */
         .card textarea { 
-            width: 100%; height: 100%; background: transparent; border: none; color: white; 
-            text-align: center; font-size: 14px; resize: none; pointer-events: none; /* Raqam chiqishiga xalaqit bermasligi uchun */
+            width: 100%; 
+            height: 100%; 
+            background: transparent; 
+            border: none; 
+            color: white; 
+            text-align: center; 
+            font-size: 20px; 
+            font-weight: bold;
+            resize: none; 
+            pointer-events: auto; /* Avval yozishga ruxsat beramiz */
+            font-family: inherit;
         }
-        .card.editable textarea { pointer-events: auto; } /* Faqat o'yin boshlanishidan oldin yozish mumkin */
+
+        /* RAQAMLAR DOSKADA JUDA KATTA KO'RINADI */
+        .card.active { 
+            background-color: #e94560; 
+            font-size: 70px; /* Raqamni ancha kattalashtirdik */
+            font-weight: bold; 
+            border-color: #fff;
+        }
+
+        .controls { margin-bottom: 30px; }
         
-        .card.active { background-color: #e94560; font-size: 30px; font-weight: bold; }
-        .controls { margin-bottom: 20px; }
-        button { padding: 10px 20px; background-color: #e94560; border: none; color: white; border-radius: 5px; cursor: pointer; font-weight: bold; margin: 5px; }
+        button { 
+            padding: 20px 40px; 
+            background-color: #e94560; 
+            border: none; 
+            color: white; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-size: 24px; 
+            font-weight: bold; 
+            margin: 10px; 
+            transition: 0.3s;
+        }
         
-        @media (max-width: 700px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+        button:hover { background-color: #ff5e78; }
+        button:disabled { background-color: #555; cursor: not-allowed; }
+
+        h2 { font-size: 45px; margin-bottom: 20px; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
+
+        @media (max-width: 900px) { .grid { grid-template-columns: repeat(3, 1fr); } }
     </style>
 </head>
 <body>
-    <h2>18 Talik Kataklar</h2>
+    <h2>18 Talik Random O'yin</h2>
     <div class="controls">
         <button id="start-btn" onclick="startGame()">O'yinni boshlash</button>
         <button onclick="location.reload()">Yangilash</button>
@@ -36,12 +102,14 @@
         const grid = document.getElementById('game-grid');
         const startBtn = document.getElementById('start-btn');
         let isGameStarted = false;
+        
+        // 18 ta random raqam tayyorlash
         let randomNumbers = Array.from({length: 18}, (_, i) => i + 1).sort(() => Math.random() - 0.5);
 
         function createBoard() {
             for (let i = 0; i < 18; i++) {
                 const card = document.createElement('div');
-                card.classList.add('card', 'editable');
+                card.classList.add('card');
                 
                 const txt = document.createElement('textarea');
                 txt.placeholder = (i + 1) + "-katak";
@@ -49,7 +117,8 @@
 
                 card.onclick = function() {
                     if (isGameStarted && !this.classList.contains('active')) {
-                        this.innerHTML = randomNumbers[i]; // Raqamni chiqarish
+                        // Ismni o'chirib raqamni chiqarish
+                        this.innerHTML = randomNumbers[i]; 
                         this.classList.add('active');
                     }
                 };
@@ -60,10 +129,13 @@
         function startGame() {
             isGameStarted = true;
             startBtn.disabled = true;
-            document.querySelectorAll('.card').forEach(c => c.classList.remove('editable'));
-            document.querySelectorAll('textarea').forEach(t => t.disabled = true);
-            alert("O'yin boshlandi! Kataklarni bosing.");
+            document.querySelectorAll('textarea').forEach(t => {
+                t.disabled = true; // Yozishni to'xtatamiz
+                t.style.pointerEvents = "none"; 
+            });
+            alert("Ismlar saqlandi! Kataklarni ochib raqamlarni ko'rishingiz mumkin.");
         }
+
         createBoard();
     </script>
 </body>
