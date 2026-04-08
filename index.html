@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>18 Talik Katta O'yin</title>
+    <title>Katta O'yin</title>
     <style>
         body { 
             background-color: #1a1a2e; 
@@ -13,38 +13,36 @@
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
-            min-height: 100vh; 
+            height: 100vh; /* Ekranni to'liq bo'yi bo'yicha markazlash */
             margin: 0; 
+            overflow: hidden; /* Ekran qimirlamasligi uchun */
         }
 
-        /* 18 TA KATAKNI 6 TA USTUNGA BO'LDIK (6x3=18) */
+        /* KATAKLARNI MAKSIMAL KATTA QILDIK */
         .grid { 
             display: grid; 
             grid-template-columns: repeat(6, 1fr); 
-            gap: 20px; 
-            width: 95%; 
-            max-width: 1300px; 
-            padding: 20px;
+            gap: 25px; /* Kataklar orasidagi masofa */
+            width: 98%; 
+            height: 80vh; /* Kataklar ekranning 80% bo'yini egallaydi */
+            max-width: 1600px; 
         }
 
         .card { 
-            aspect-ratio: 1 / 1; 
             background-color: #16213e; 
-            border: 4px solid #0f3460; 
-            border-radius: 15px; 
+            border: 5px solid #0f3460; 
+            border-radius: 20px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             cursor: pointer; 
             position: relative; 
-            padding: 10px; 
+            padding: 15px; 
             box-sizing: border-box; 
-            transition: transform 0.2s, background-color 0.3s;
+            transition: 0.3s;
         }
 
-        .card:hover { transform: scale(1.05); }
-
-        /* ISMLAR YOZILADIGAN JOY */
+        /* ISMLAR UCHUN TEXTAREA */
         .card textarea { 
             width: 100%; 
             height: 100%; 
@@ -52,50 +50,56 @@
             border: none; 
             color: white; 
             text-align: center; 
-            font-size: 20px; 
+            font-size: 28px; /* Ismlar juda katta */
             font-weight: bold;
             resize: none; 
-            pointer-events: auto; /* Avval yozishga ruxsat beramiz */
+            pointer-events: auto; 
             font-family: inherit;
         }
 
-        /* RAQAMLAR DOSKADA JUDA KATTA KO'RINADI */
+        /* RAQAMLAR EKRANDA GIGANT KO'RINADI */
         .card.active { 
             background-color: #e94560; 
-            font-size: 70px; /* Raqamni ancha kattalashtirdik */
+            font-size: 100px; /* Raqamni juda katta qildik! */
             font-weight: bold; 
             border-color: #fff;
+            color: white;
         }
 
-        .controls { margin-bottom: 30px; }
+        .controls { 
+            margin-bottom: 20px; 
+            display: flex;
+            gap: 20px;
+        }
         
         button { 
-            padding: 20px 40px; 
+            padding: 15px 40px; 
             background-color: #e94560; 
             border: none; 
             color: white; 
             border-radius: 12px; 
             cursor: pointer; 
-            font-size: 24px; 
+            font-size: 22px; 
             font-weight: bold; 
-            margin: 10px; 
             transition: 0.3s;
         }
         
         button:hover { background-color: #ff5e78; }
-        button:disabled { background-color: #555; cursor: not-allowed; }
+        button:disabled { background-color: #555; opacity: 0.7; }
 
-        h2 { font-size: 45px; margin-bottom: 20px; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
-
-        @media (max-width: 900px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 1000px) { 
+            .grid { grid-template-columns: repeat(3, 1fr); height: auto; }
+            .card { aspect-ratio: 1/1; }
+        }
     </style>
 </head>
 <body>
-    <h2>18 Talik Random O'yin</h2>
+
     <div class="controls">
         <button id="start-btn" onclick="startGame()">O'yinni boshlash</button>
         <button onclick="location.reload()">Yangilash</button>
     </div>
+
     <div id="game-grid" class="grid"></div>
 
     <script>
@@ -103,7 +107,7 @@
         const startBtn = document.getElementById('start-btn');
         let isGameStarted = false;
         
-        // 18 ta random raqam tayyorlash
+        // 18 ta random raqam
         let randomNumbers = Array.from({length: 18}, (_, i) => i + 1).sort(() => Math.random() - 0.5);
 
         function createBoard() {
@@ -117,7 +121,6 @@
 
                 card.onclick = function() {
                     if (isGameStarted && !this.classList.contains('active')) {
-                        // Ismni o'chirib raqamni chiqarish
                         this.innerHTML = randomNumbers[i]; 
                         this.classList.add('active');
                     }
@@ -130,10 +133,9 @@
             isGameStarted = true;
             startBtn.disabled = true;
             document.querySelectorAll('textarea').forEach(t => {
-                t.disabled = true; // Yozishni to'xtatamiz
+                t.disabled = true;
                 t.style.pointerEvents = "none"; 
             });
-            alert("Ismlar saqlandi! Kataklarni ochib raqamlarni ko'rishingiz mumkin.");
         }
 
         createBoard();
