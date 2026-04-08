@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Katta O'yin</title>
+    <title>Katta O'yin - Saqlash bilan</title>
     <style>
         body { 
             background-color: #1a1a2e; 
@@ -13,18 +13,17 @@
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
-            height: 100vh; /* Ekranni to'liq bo'yi bo'yicha markazlash */
+            height: 100vh; 
             margin: 0; 
-            overflow: hidden; /* Ekran qimirlamasligi uchun */
+            overflow: hidden; 
         }
 
-        /* KATAKLARNI MAKSIMAL KATTA QILDIK */
         .grid { 
             display: grid; 
             grid-template-columns: repeat(6, 1fr); 
-            gap: 25px; /* Kataklar orasidagi masofa */
+            gap: 25px; 
             width: 98%; 
-            height: 80vh; /* Kataklar ekranning 80% bo'yini egallaydi */
+            height: 80vh; 
             max-width: 1600px; 
         }
 
@@ -42,7 +41,6 @@
             transition: 0.3s;
         }
 
-        /* ISMLAR UCHUN TEXTAREA */
         .card textarea { 
             width: 100%; 
             height: 100%; 
@@ -50,20 +48,17 @@
             border: none; 
             color: white; 
             text-align: center; 
-            font-size: 28px; /* Ismlar juda katta */
+            font-size: 28px; 
             font-weight: bold;
             resize: none; 
-            pointer-events: auto; 
             font-family: inherit;
         }
 
-        /* RAQAMLAR EKRANDA GIGANT KO'RINADI */
         .card.active { 
             background-color: #e94560; 
-            font-size: 100px; /* Raqamni juda katta qildik! */
+            font-size: 100px; 
             font-weight: bold; 
             border-color: #fff;
-            color: white;
         }
 
         .controls { 
@@ -81,22 +76,17 @@
             cursor: pointer; 
             font-size: 22px; 
             font-weight: bold; 
-            transition: 0.3s;
         }
         
-        button:hover { background-color: #ff5e78; }
-        button:disabled { background-color: #555; opacity: 0.7; }
-
-        @media (max-width: 1000px) { 
-            .grid { grid-template-columns: repeat(3, 1fr); height: auto; }
-            .card { aspect-ratio: 1/1; }
-        }
+        button#reset-btn { background-color: #555; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
     <div class="controls">
         <button id="start-btn" onclick="startGame()">O'yinni boshlash</button>
+        <button id="reset-btn" onclick="clearData()">Ismlarni o'chirish</button>
         <button onclick="location.reload()">Yangilash</button>
     </div>
 
@@ -106,26 +96,53 @@
         const grid = document.getElementById('game-grid');
         const startBtn = document.getElementById('start-btn');
         let isGameStarted = false;
-        
-        // 18 ta random raqam
         let randomNumbers = Array.from({length: 18}, (_, i) => i + 1).sort(() => Math.random() - 0.5);
 
         function createBoard() {
+            // Avval saqlangan ismlarni olamiz
+            const savedNames = JSON.parse(localStorage.getItem('oyinchiIsmlari')) || {};
+
             for (let i = 0; i < 18; i++) {
                 const card = document.createElement('div');
                 card.classList.add('card');
                 
                 const txt = document.createElement('textarea');
                 txt.placeholder = (i + 1) + "-katak";
-                card.appendChild(txt);
+                
+                // Agar saqlangan ism bo'lsa, uni joylashtiramiz
+                if (savedNames[i]) {
+                    txt.value = savedNames[i];
+                }
 
-                card.onclick = function() {
+                // Har bir harf yozilganda avtomat saqlaydi
+                txt.oninput = function() {
+                    saveAllNames();
+                };
+
+                card.onclick = function(e) {
                     if (isGameStarted && !this.classList.contains('active')) {
                         this.innerHTML = randomNumbers[i]; 
                         this.classList.add('active');
                     }
                 };
+                
+                card.appendChild(txt);
                 grid.appendChild(card);
+            }
+        }
+
+        function saveAllNames() {
+            const names = {};
+            document.querySelectorAll('textarea').forEach((t, index) => {
+                names[index] = t.value;
+            });
+            localStorage.setItem('oyinchiIsmlari', JSON.stringify(names));
+        }
+
+        function clearData() {
+            if(confirm("Barcha ismlarni o'chirib tashlamoqchimisiz?")) {
+                localStorage.removeItem('oyinchiIsmlari');
+                location.reload();
             }
         }
 
@@ -136,6 +153,7 @@
                 t.disabled = true;
                 t.style.pointerEvents = "none"; 
             });
+            saveAllNames(); // Oxirgi holatni saqlab qo'yadi
         }
 
         createBoard();
